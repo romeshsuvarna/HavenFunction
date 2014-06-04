@@ -1,0 +1,63 @@
+/* Required Stylesheets */
+.wheel-button {
+  position: relative;
+}
+
+.wheel {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 380px; /* this will determine the diameter of the circle  */
+  height: 380px; /* this will determine the diameter of the circle  */
+  visibility: hidden;
+  position: relative;
+  display: none;
+}
+
+.wheel li {
+  overflow: hidden;
+  float:left;
+ /* border:1px solid red; */
+  line-height:35px;
+  
+}
+
+.wheel li a {
+  display: inline-block;
+
+
+}
+
+header, section, footer, aside, nav, article, figure{ 
+ display: block; 
+}
+
+
+section{
+	color:#000;
+	text-align:left;
+
+}
+
+hr{
+	border:1px solid #F25123;
+}
+
+.call_hr {
+	border:1px solid #336699;
+}
+
+
+.two_columns {
+	column-count: 2; column-gap: 1.5em; -moz-column-count: 2; -o-column-count: 2; -ms-column-count: 2; -webkit-column-count: 2; -moz-column-gap: 1.5em; -o-column-gap: 1.5em; -ms-column-gap: 1.5em; -webkit-column-gap: 1.5em;
+}
+
+.pattern-bg-lighter {
+	box-shadow: 1px 1px 10px #ccc; background-color: white !important;
+}
+
+hgroup{
+	float:left;
+	text-align:left;
+	padding-right:5%;
+}

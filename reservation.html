@@ -1,0 +1,405 @@
+<link type="text/css" href="./css/jquery.datepick.css" rel="stylesheet">
+
+<script type="text/javascript" src="./js/jquery.datepick.js"></script>
+
+<script type="text/javascript">
+
+$(function() {
+	$("#input_adult").keydown(function(event) {
+		// Allow only backspace and delete
+		if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode >= 35 && event.keyCode <= 40 || event.keyCode >= 48 && event.keyCode <= 57 || event.keyCode >= 96 && event.keyCode <= 105  ) {
+			// let it happen, don't do anything
+		}
+		else {
+			// Ensure that it is a number and stop the keypress
+			if (event.keyCode < 48 || event.keyCode > 57 ) {
+				event.preventDefault();	
+			}	
+		}
+	});
+
+	$("#input_contact").keydown(function(event) {
+		// Allow only backspace and delete
+		if ( event.keyCode == 46 || event.keyCode == 8 || event.keyCode >= 35 && event.keyCode <= 40 || event.keyCode >= 48 && event.keyCode <= 57 || event.keyCode >= 96 && event.keyCode <= 105  ) {
+			// let it happen, don't do anything
+		}
+		else {
+			// Ensure that it is a number and stop the keypress
+			if (event.keyCode < 48 || event.keyCode > 57 ) {
+				event.preventDefault();	
+			}	
+		}
+	});
+
+	$('#pref_date').datepick();
+	$( ".target" ).change(function() {
+		// alert($(this).attr('id'));
+		if($(this).attr('id') =="input_fname" || $(this).attr('id') =="input_lname"){
+			if($("#input_fname").val() ==""){
+				$("#error_fullname").text("Please enter your First Name");
+			}
+			else if ($("#input_lname").val() =="")
+			{
+				$("#error_fullname").text("Please enter your Last Name");
+			}
+			else{
+				$("#error_fullname").hide();
+			}
+			
+		}
+
+		else if($(this).attr('id') =="input_email"){
+		//	alert("email");
+			if($("#input_email").val() !=""){
+				$('#input_email').blur(function() {
+					var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
+					if (testEmail.test(this.value)) {
+						$("#error_email").hide();
+					}
+					else {
+						$("#error_email").text("Please enter a valid Email Id - email_id@domain.com");
+						
+					}
+				});	
+
+				//$("#error_email").hide();
+				
+			}
+
+			else{
+				$("#error_fullname").text("Please enter your Email Id");
+			}
+
+		}
+
+		
+		else{
+			$(this).closest('div').find('span').hide();
+		}
+		
+
+	});
+
+
+
+	$('#quick-booking-form').submit(function(event) {
+		  
+		  event.preventDefault();
+		  
+			var input_interest = $("#input_interest").val();
+			var pref_date = $("#pref_date").val();
+			var input_adult = $("#input_adult").val();
+			//var input_child = $("#input_child").val();
+			var input_fname = $("#input_fname").val();
+			var input_lname = $("#input_lname").val();
+			var input_email = $("#input_email").val();
+			var input_contact = $("#input_contact").val();
+			var input_comment = $("#input_comment").val();
+
+			
+
+			var count_valid ="0";
+			function check_valid(){
+				if(input_interest ==''){
+					count_valid++;
+					$("#error_interest").text("Please select Area of Interest");
+					$("#error_interest").show();
+					
+
+				};
+				
+				if(input_adult ==''){
+					count_valid++;
+					$("#error_adult").text("Please enter number of guest invited for function");
+					$("#error_adult").show();
+
+				};
+				
+				if(input_fname ==''){
+					count_valid++;
+					$("#error_fullname").text("Please enter your First Name / Last Name");
+					$("#error_fullname").show();
+				};
+				if(input_lname ==''){
+					count_valid++;
+					$("#error_fullname").text("Please enter your First Name / Last Name");
+					$("#error_fullname").show();
+				};
+
+				if(input_email ==''){
+					count_valid++;
+					$("#error_email").text("Please enter your valid Email Id");
+					$("#error_email").show();
+				};
+			/*	if(input_comment ==''){
+					count_valid++;
+					
+				};*/
+
+				if(input_contact ==''){
+					count_valid++;
+					$("#error_contact").text("Please enter your Mobile Number");
+					$("#error_contact").show();
+				}
+				else{
+					if(input_contact.length <= '9'){
+						count_valid++;
+						$("#error_contact").text("Please enter 10 digit for Mobile Number");
+						$("#error_contact").show();
+					}
+					
+
+				};
+				
+			};
+			
+			//alert("count1: " + count_valid);
+			check_valid();
+			//alert("count:2 " + count_valid);
+
+			if(count_valid == "0"){
+				$("#quick-booking-form").append("<div id='loading_box'><img src='/images/ajax-loader.gif' /> Please wait ... </div>");
+				$.ajax({
+					type: "POST",
+					url:"form-to-email.php",
+					data:{ 
+						"input_interest": input_interest,
+						"pref_date"		: pref_date,
+						"input_adult"	: input_adult,
+						//"input_child"	: input_child,
+						"input_fname"	: input_fname,
+						"input_lname"	: input_lname,
+						"input_email"	: input_email,
+						"input_contact"	: input_contact,
+						"input_comment"	: input_comment,
+						},
+					dataType: "text",
+					success: function(data) {
+					 //  alert(data);
+					   $('#quick-booking-form').trigger("reset");
+					   setTimeout(function() {
+						  $("#loading_box").remove();
+						}, 2000);
+					   
+					}
+				});
+				return false;
+			}		
+	
+	});
+	
+});
+</script>
+	<header>
+		<hgroup>
+			<h1>Reservation</h1>
+		</hgroup>
+		<div style="clear:both"></div>
+		<section>
+			<div>
+				
+				<form id="quick-booking-form" method="post" action="#"> 
+				<ul>
+					<li>
+						<label for="">Area of Interest</label>	
+						<div>
+							<select name="input_interest" class="medium gfield_select target" id="input_interest">
+								<option value="">Please Select</option>
+								<option value="Corporate">Corporate</option>
+								<option value="Wedding">Wedding</option>
+								<option value="Engagement">Engagement</option>
+								<option value="Birthday">Birthday</option>
+								<option value="Christening">Christening</option>
+								<option value="School Formal">School Formal</option><option value="Other">Other</option>
+							</select><span id="error_interest" class="error"></span>
+						</div>
+					</li>
+					<li class="enquires-divider">
+						<h2 class="gsection_title">Event Details</h2>
+					</li>
+					<li id="field_1_2">
+						<label for="input_1_2">Preferred Date</label>
+						<div >
+							<input name="pref_date"  id="pref_date"  class="target input_small" type="text" value=""><span id="error_pref_date" class="error"></span>			
+						</div>
+					</li>
+					<li id="field_1_3"  style="float:left; margin-right:50px;">
+						<label for="input_1_3">Number of Guest</label>
+						<div >
+							<input name="input_adult" id="input_adult" class="input_small target" type="text" value=""><span id="error_adult" class="error"></span>	
+						</div>
+					</li>
+					
+					<li class="enquires-divider" style="clear:both ;" id="field_1_10"><br>
+						<h2 class="gsection_title">Your Details</h2>
+					</li>
+					<li id="field_1_5">
+						<label for="input_1_5_3">Full Name<span class="_required">*</span></label>	
+					</li>
+					<li id="">
+						<input name="input_fname" class="target" id="input_fname" type="text" value="">	
+						<!-- <label for="input_1_5_3">First</label> -->					
+						<input name="input_lname" id="input_lname" type="text" class="target" value="">
+						<!-- <label for="input_1_5_6">Last</label> -->							
+						<span id="error_fullname" class="error"></span>
+					</li>
+					<li id="field_1_6">
+						<label for="input_1_6">Email<span class="_required">*</span></label>
+						<div >
+							<input name="input_email" class="medium target" id="input_email" type="text" value=""><span id="error_email" class="error"></span>	
+						</div>
+					</li>
+					<li id="field_1_7">
+						<label for="input_1_7">Mobile Number</label>
+						<div >
+							<input name="input_contact" class="medium target" id="input_contact" type="text" value="" maxlength="10"><span id="error_contact" class="error"></span>	
+						</div>
+					</li>
+					<li  id="field_1_8">
+						<label for="input_1_8">Additional comments and/or requests:</label>
+						<div >
+							<textarea name="input_comment" class="textarea medium target" id="input_comment" rows="10" cols="50"></textarea>
+						</div>
+					</li>
+					
+				</ul>
+				<div style="margin:auto; padding-left:3%;"><input id="but_submit" type="submit" value="Send"></div>
+				</form>
+			</div>
+			
+		</section>
+	</header>
+                           
+<style>
+#loading_box{
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	position:absolute; 
+	top:35%; 
+	left:35%; 
+	padding:30px; 
+	border:1px solid #fff;
+	color:#fff;
+	font-size:12px;
+	background-color: #F25123 ;
+}
+
+.ginput_container{
+	padding-left:20px;
+}
+
+
+
+div {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+span {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+
+dl {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+dt {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+dd {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+ol {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+ul {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+li {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+fieldset {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+form {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+label {
+	margin: 0px; padding: 0px; outline: 0px; border: 0px currentColor; font-size: 100%; vertical-align: baseline;
+}
+
+ol {
+	list-style: none;
+}
+ul {
+	list-style: none;
+}
+
+li {
+	 line-height: 140%; font-size: 13px;
+}
+
+ul {
+	margin: 0px 0px 7px;
+}
+ol {
+	margin: 0px 0px 7px;
+}
+#gforms_confirmation_message {
+	font: 13px/140% Arial, Helvetica, sans-serif; color: rgb(65, 64, 66); margin-top: 25px; font-size-adjust: none; font-stretch: normal;
+}
+
+ul {
+	margin-left: 20px;
+}
+ol {
+	list-style: decimal; margin-left: 30px;
+}
+
+#gform_1 input[type=text] {
+	border: 1px solid rgb(204, 204, 204); resize: none;
+}
+#gform_1 textarea {
+	border: 1px solid rgb(204, 204, 204); resize: none;
+}
+#gform_1 input[type=submit] {
+	background: rgb(204, 204, 204); padding: 10px 20px; border: currentColor; color: rgb(51, 51, 51); text-transform: uppercase; font-weight: 700; float: right;
+}
+#gform_1 input[type=submit]:hover {
+	background: rgb(255, 202, 8); transition:0.5s; cursor: pointer; -webkit-transition: all 0.5s ease; -moz-transition: all 0.5s ease; -o-transition: all 0.5s ease;
+}
+#gform_1 li.enquires-divider {
+	clear: both;
+}
+#gform_1 li#field_1_3 {
+	width: 49%; clear: none !important; margin-bottom: 30px; float: left; display: inline !important;
+}
+#gform_1 li#field_1_4 {
+	width: 49%; clear: none !important; margin-bottom: 30px; float: left; display: inline !important;
+}
+#gform_1 li#field_1_6 {
+	width: 49%; clear: none !important; margin-bottom: 30px; float: left; display: inline !important;
+}
+#gform_1 li#field_1_7 {
+	width: 49%; clear: none !important; margin-bottom: 30px; float: left; display: inline !important;
+}
+#gform_1 li#field_1_6 {
+	margin-bottom: 10px;
+}
+#gform_1 li#field_1_7 {
+	margin-bottom: 10px;
+}
+#gform_1 li#field_1_6 input[type=text] {
+	width: 96% !important;
+}
+#gform_1 li#field_1_7 input[type=text] {
+	width: 96% !important;
+}
+#gform_1 li#field_1_4 {
+	float: right;
+}
+#gform_1 li#field_1_7 {
+	float: right;
+}
+.ui-datepicker {
+	background: rgb(245, 245, 245);
+}
+</style>
